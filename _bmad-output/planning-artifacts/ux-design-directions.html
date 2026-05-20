@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>agenda-clean | Design Directions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f3f4f6;
+            font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            color: #111827;
+        }
+        .mockup-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 100%;
+        }
+        .iphone-frame {
+            width: 375px;
+            height: 812px;
+            border: 12px solid #1f2937;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: white;
+            position: relative;
+        }
+        .iphone-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 28px;
+            background: #1f2937;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        .screen-content {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding-top: 44px;
+        }
+        .desktop-frame {
+            width: 100%;
+            height: 600px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: white;
+        }
+        .desktop-content {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .form-section {
+            padding: 24px;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .time-slot {
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .time-slot:hover {
+            border-color: #2563eb;
+            background: #f0f6ff;
+        }
+        .time-slot.available {
+            background: #f3f4f6;
+        }
+        .time-slot.unavailable {
+            background: #fee2e2;
+            color: #991b1b;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .time-slot.selected {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background: #1e40af;
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        .btn-secondary {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            background: white;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: #d1d5db;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-confirmed {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-done {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        .card-info {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            background: #f9fafb;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 24px 0 16px 0;
+            color: #111827;
+        }
+        .info-box {
+            background: #f0f6ff;
+            border-left: 4px solid #2563eb;
+            padding: 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1e40af;
+            margin-bottom: 16px;
+        }
+        .page-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+        .mockup-label {
+            text-align: center;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        @media (max-width: 1400px) {
+            .page-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+        .controls {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .controls h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .controls-content {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎨 Design Directions: agenda-clean</h1>
+        <p>Direction B Selected: Single-Page Form (Ana) + Card Layout (João)</p>
+    </div>
+
+    <div style="max-width: 1400px; margin: 0 auto; padding: 40px 20px;">
+        <div class="controls">
+            <h2>✅ Direção de Design Escolhida</h2>
+            <div class="controls-content">
+                <p><strong>Ana (Cliente):</strong> Single-Page Form — Formulário completo em uma tela (data + hora + endereço + observações + confirmar)</p>
+                <p style="margin-top: 8px;"><strong>João (Admin):</strong> Card Layout — Cada agendamento é um card com espaço para visualizar e agir</p>
+                <p style="margin-top: 12px; font-style: italic; color: #9ca3af;">Abaixo você vê as duas interfaces funcionando com a paleta de cores, tipografia e spacing definidos no Step 8.</p>
+            </div>
+        </div>
+
+        <div class="page-wrapper">
+            <!-- Ana's Booking Interface -->
+            <div>
+                <div class="mockup-label">📱 ANA'S BOOKING (Cliente)</div>
+                <div class="iphone-frame">
+                    <div class="screen-content">
+                        <div class="header" style="margin-top: -44px; padding-top: 44px;">
+                            <h1 style="font-size: 24px;">Novo Agendamento</h1>
+                            <p>Rápido e fácil</p>
+                        </div>
+
+                        <div class="form-section">
+                            <!-- Data Selection -->
+                            <div class="form-group">
+                                <label>📅 Data do Agendamento</label>
+                                <input type="date" class="form-input" value="2026-04-25">
+                                <div class="info-box" style="margin-top: 12px;">
+                                    Próximo: Sábado, 25 de Abril
+                                </div>
+                            </div>
+
+                            <!-- Time Selection -->
+                            <div class="form-group">
+                                <label>⏰ Hora Disponível</label>
+                                <div class="time-grid">
+                                    <div class="time-slot unavailable">09:00<br><small>Ocupado</small></div>
+                                    <div class="time-slot unavailable">10:00<br><small>Ocupado</small></div>
+                                    <div class="time-slot available">11:00</div>
+                                    <div class="time-slot available">13:00</div>
+                                    <div class="time-slot available">14:00</div>
+                                    <div class="time-slot available">15:00</div>
+                                    <div class="time-slot available">16:00</div>
+                                    <div class="time-slot selected">17:00</div>
+                                </div>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="form-group">
+                                <label>📍 Endereço</label>
+                                <input type="text" class="form-input" value="Rua das Flores, 123 - Apto 42" placeholder="Ex: Rua das Flores, 123">
+                                <small style="color: #6b7280; display: block; margin-top: 6px;">💡 Endereço da sessão anterior</small>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="form-group">
+                                <label>📝 Observações (opcional)</label>
+                                <textarea class="form-textarea" placeholder="Ex: Sofá cinza grande, 1 poltrona..."></textarea>
+                            </div>
+
+                            <!-- Submit -->
+                            <button class="btn-primary">✓ Confirmar Agendamento</button>
+
+                            <div class="info-box" style="margin-top: 16px; background: #dcfce7; border-color: #10b981; color: #166534;">
+                                ✓ Confirmação será enviada por email
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- João's Admin Interface -->
+            <div>
+                <div class="mockup-label">🖥️ JOÃO'S ADMIN (Admin Dashboard)</div>
+                <div class="desktop-frame">
+                    <div class="desktop-content">
+                        <div style="margin-bottom: 24px;">
+                            <h2 class="section-title">Agendamentos</h2>
+                            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                                <button class="btn-secondary">Todos (8)</button>
+                                <button class="btn-secondary">Confirmados (5)</button>
+                                <button class="btn-secondary">Pendentes (3)</button>
+                            </div>
+                        </div>
+
+                        <!-- Card 1: Confirmed -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Ana Silva</div>
+                                    <div class="card-info">
+                                        📅 22 de Abril • ⏰ 10:00<br>
+                                        📍 Rua das Flores, 123 - Apto 42<br>
+                                        💬 Sofá cinza grande, 1 poltrona
+                                    </div>
+                                </div>
+                                <span class="badge badge-confirmed">Confirmado</span>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn">↻ Reagendar</button>
+                                <button class="action-btn">✓ Concluído</button>
+                                <button class="action-btn">✉ Enviar Lembrete</button>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Pending -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Carlos Oliveira</div>
+                                    <div class="card-info">
+                                        📅 23 de Abril • ⏰ 14:00<br>
+                                        📍 Rua B, 456 - Sala 10<br>
+                                        💬 Sem observações
+                                    </div>
+                                </div>
+                                <span class="badge badge-pending">Aguardando Confirmação</span>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn">✓ Confirmar</button>
+                                <button class="action-btn">✉ Enviar Lembrete</button>
+                                <button class="action-btn">✕ Cancelar</button>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Done -->
+                        <div class="card" style="opacity: 0.6;">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Maria Santos</div>
+                                    <div class="card-info">
+                                        📅 21 de Abril • ⏰ 09:00<br>
+                                        📍 Rua C, 789<br>
+                                        💬 Limpeza profunda
+                                    </div>
+                                </div>
+                                <span class="badge badge-done">Concluído</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 24px; background: white; border-radius: 8px;">
+            <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">📊 Design Direction Analysis</h2>
+            <div style="font-size: 13px; color: #6b7280; line-height: 1.8;">
+                <p><strong>✅ Layout Intuitiveness:</strong> Single-page form reduces cognitive load for Ana (no step confusion). Cards for João provide clear visual structure for multiple items.</p>
+                <p><strong>✅ Interaction Style:</strong> Form uses familiar patterns (date picker, time grid selection). Cards use click-to-expand actions (reagendar, concluído, reminder).</p>
+                <p><strong>✅ Visual Weight:</strong> Blue primary color (#2563eb) for CTA buttons creates clear visual hierarchy. Green badges for "Confirmado" reinforce positive state.</p>
+                <p><strong>✅ Navigation:</strong> Linear form flow for Ana (no back button needed). Tab filters for João (Todos, Confirmados, Pendentes) provide quick access.</p>
+                <p><strong>✅ Component Usage:</strong> Form inputs (date, select, textarea) standard. Card action buttons are secondary buttons for clarity. Status badges use semantic colors (green=done, amber=pending, indigo=neutral).</p>
+                <p><strong>✅ Brand Alignment:</strong> Color palette supports emotional goals: Blue (trust, confidence), Green (confirmation, relief), Readable typography (system font stack), Responsive spacing (16px mobile, 24px desktop).</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive elements (demo interactivity)
+        document.querySelectorAll('.time-slot.available').forEach(slot => {
+            slot.addEventListener('click', function() {
+                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.btn-secondary').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.btn-secondary').forEach(b => b.style.background = '');
+                this.style.background = '#e5e7eb';
+            });
+        });
+    </script>
+</body>
+</html>

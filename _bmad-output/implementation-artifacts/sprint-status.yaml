@@ -1,0 +1,467 @@
+# generated: 13 de maio de 2026
+# last_updated: 13 de maio de 2026
+# project: agenda-clean
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: /home/davi/Documentos/Projetos/agenda-clean/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 13 de maio de 2026
+last_updated: 20 de maio de 2026 (Story 2.3 file created - Protected Routes & Auth Middleware Frontend)
+project: agenda-clean
+project_key: NOKEY
+tracking_system: file-system
+story_location: /home/davi/Documentos/Projetos/agenda-clean/_bmad-output/implementation-artifacts
+
+# SPRINT OVERVIEW
+# ===============
+# Current Sprint: Sprint 0 - Foundation & Setup (Week 1)
+# Total Epics: 5
+# Total Stories: 29 (updated: Story 2.3 added & sequenced before user account creation)
+# Stories Ready for Dev: 8 (1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3)
+# Stories In Progress: 1 (2.2)
+# Stories in Review: 0
+# Stories Completed: 0
+# Estimated Total Effort: 71 hours (added 3h for 2.3)
+#
+# EXECUTION STRATEGY:
+# 1. Sprint 0 (Week 1): Epic 1 - Foundation & Setup (5 stories, 16 hours)
+#    - Frontend project initialization (Vite+React+Tailwind)
+#    - Backend project initialization (Node.js+Express+TypeScript)
+#    - Database schema & Prisma setup
+#    - Environment configuration
+#    - Project documentation
+#    Stories: 1.1, 1.2, 1.3, 1.4, 1.5
+#
+# 2. Sprint 1 (Week 1-2): Epic 2 - Authentication & User Management (7 stories, 15 hours)
+#    - Google OAuth setup & Passport.js integration (Backend)
+#    - Login page (Frontend) & Google OAuth button
+#    - Protected routes & auth middleware (Frontend)
+#    - Automatic user account creation
+#    - Admin role pre-configuration
+#    - JWT session tokens & session management
+#    - Protected route middleware & authorization (Backend)
+#    Stories: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7
+#    Dependency: Epic 1 (Foundation) ✓ Must be completed first
+#    Sequence: 2.1 (backend OAuth) → 2.2 (login UI) → 2.3 (routing protection) → 2.4+ (supporting stories)
+#
+# 3. Sprint 2 (Week 2-3): Epic 3 - Client Booking Experience (6 stories, 16 hours)
+#    - Booking form component
+#    - Real-time availability validation
+#    - Booking confirmation & success message
+#    - Client booking history view
+#    - Booking detail view
+#    - Client dashboard home page
+#    Stories: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
+#    Dependency: Epic 2 (Authentication) ✓ Must be completed first
+#
+# 4. Sprint 3 (Week 3): Epic 4 - Admin Management Dashboard (6 stories, 14 hours)
+#    - Admin dashboard layout & navigation
+#    - Agendamentos list view (all clients)
+#    - Filter & search agendamentos
+#    - Status update UI (inline actions)
+#    - Agendamento detail modal/view
+#    - Real-time availability display
+#    Stories: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6
+#    Dependency: Epic 2 (Authentication) ✓ Must be completed first
+#    Note: Can be worked in parallel with Epic 3 (Client Booking) after Auth is done
+#
+# 5. Sprint 4 (Week 4): Epic 5 - Email Notifications & System Integration (5 stories, 10 hours)
+#    - SendGrid integration & email service setup
+#    - Booking confirmation email template
+#    - Conflict prevention at database level
+#    - Email notification on status changes
+#    - Error handling & reliability
+#    - Frontend & backend deployment
+#    - System testing & QA
+#    Stories: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7
+#    Dependency: Epics 3 & 4 (Client Booking + Admin Dashboard) ✓ Must be substantially complete
+#    Note: Testing & deployment is final step before MVP launch
+#
+# SPRINT 0 PRIORITY & SEQUENCE:
+# =============================
+# Week 1 (Foundation) - Do Stories in This Order:
+# 1. Story 1.1 (Frontend Init) - 2h - BLOCKER: Required for client UI development
+# 2. Story 1.2 (Backend Init) - 2h - BLOCKER: Required for API development
+# 3. Story 1.3 (Database Schema) - 3h - BLOCKER: Required for data persistence
+# 4. Story 1.4 (Env Config) - 1h - Unblocks OAuth setup
+# 5. Story 1.5 (Documentation) - 1h - Documentation (can be done anytime but important for handoff)
+#
+# PARALLELIZATION OPPORTUNITY (After Foundation):
+# After Epic 1 is complete (end of Week 1), Epics 2, 3, and 4 can be worked in parallel:
+# - Epic 2 (Auth) is BLOCKER for Epics 3 & 4, so do it first
+# - After Auth is done, Epic 3 (Client) and Epic 4 (Admin) can be done in parallel
+# - Epic 5 (Email & Deploy) requires Epics 3 & 4 to be complete
+
+development_status:
+
+  # EPIC 1: FOUNDATION & SETUP
+  # ==========================
+  # Status: in-progress (First story file created on 13 de maio de 2026)
+  # Priority: P0 - CRITICAL BLOCKER for all subsequent epics
+  # Effort: 16 hours
+  # Sprint: 0 (Week 1)
+
+  epic-1: in-progress
+
+  # Story 1.1: Initialize Frontend Project
+  # Dependencies: None
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL BLOCKER
+  # Status: ready-for-dev (Story file created: /implementation-artifacts/stories/1-1-initialize-frontend-project.md)
+  1-1-initialize-frontend-project: ready-for-dev
+
+  # Story 1.2: Initialize Backend Project
+  # Dependencies: None
+  # Effort: 3 hours
+  # Priority: P0 - CRITICAL BLOCKER
+  # Status: ready-for-dev (Story file created: /implementation-artifacts/stories/1-2-initialize-backend-project.md)
+  1-2-initialize-backend-project: ready-for-dev
+
+  # Story 1.3: Database Schema & Prisma Setup
+  # Dependencies: 1.2 (Backend initialized first)
+  # Effort: 3 hours
+  # Priority: P0 - CRITICAL BLOCKER
+  # Status: ready-for-dev (Story file created: /implementation-artifacts/stories/1-3-setup-database.md)
+  1-3-setup-database: ready-for-dev
+
+  # Story 1.4: Configure Project Documentation
+  # Dependencies: 1.3 (Database schema complete)
+  # Effort: 3-4 hours
+  # Priority: P1 - Important for onboarding and knowledge sharing
+  # Status: ready-for-dev (Story file created: /implementation-artifacts/stories/1-4-configure-documentation.md)
+  1-4-configure-documentation: ready-for-dev
+
+  # Story 1.5: Setup CI/CD & Environments
+  # Dependencies: 1.4 (Environment Configuration)
+  # Effort: 3-4 hours
+  # Priority: P1 - Infrastructure & DevOps
+  # Status: ready-for-dev (Story file created: /implementation-artifacts/stories/1-5-setup-cicd-environments.md)
+  1-5-setup-cicd-environments: ready-for-dev
+
+  epic-1-retrospective: optional
+
+
+  # EPIC 2: AUTHENTICATION & USER MANAGEMENT
+  # =========================================
+  # Status: backlog (Waiting for Epic 1 to complete)
+  # Priority: P0 - CRITICAL BLOCKER for Epics 3 & 4
+  # Effort: 12 hours
+  # Sprint: 1 (Week 1-2)
+  # Dependency: Epic 1 (Foundation) MUST be complete
+
+  epic-2: in-progress
+
+  # Story 2.1: Google OAuth Setup & Passport.js Integration
+  # Dependencies: Epic 1 ✓, 1.4 (Env config)
+  # Effort: 4 hours
+  # Priority: P0 - CRITICAL
+  # Status: ready-for-dev (Story file created: /implementation-artifacts/stories/2-1-google-oauth-setup-backend.md)
+  2-1-google-oauth-setup-backend: ready-for-dev
+
+  # Story 2.2: Login Page (Frontend)
+  # Dependencies: 2.1 (OAuth setup), 1.1 (Frontend init)
+  # Effort: 4 hours
+  # Priority: P0 - CRITICAL
+  # Status: in-progress (Story started on 20 de maio de 2026)
+  2-2-login-page-frontend: in-progress
+
+  # Story 2.3: Protected Routes & Auth Middleware (Frontend)
+  # Dependencies: 2.2 (Login page), 1.1 (Frontend init)
+  # Effort: 3 hours
+  # Priority: P0 - CRITICAL (blocks all protected pages)
+  # Status: ready-for-dev (Story file created: /implementation-artifacts/stories/2-3-protected-routes-auth-middleware.md)
+  # Created: 20 de maio de 2026
+  2-3-protected-routes-auth-middleware: ready-for-dev
+
+  # Story 2.4: Automatic User Account Creation on First Login
+  # Dependencies: 2.1 (OAuth setup), 1.3 (Database schema)
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL
+  2-4-automatic-user-account-creation-on-first-login: backlog
+
+  # Story 2.5: Admin Role Pre-configuration
+  # Dependencies: 2.4 (Auto account creation)
+  # Effort: 1 hour
+  # Priority: P1 - Important for admin access
+  2-5-admin-role-preconfiguration: backlog
+
+  # Story 2.6: JWT Session Tokens & Session Management
+  # Dependencies: 2.1 (OAuth setup)
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL for API security
+  2-6-jwt-session-tokens-session-management: backlog
+
+  # Story 2.7: Protected Route Middleware & Authorization (Backend)
+  # Dependencies: 2.6 (JWT tokens), 2.5 (Admin roles)
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL for authorization
+  2-7-protected-route-middleware-authorization-backend: backlog
+
+  epic-2-retrospective: optional
+
+
+  # EPIC 3: CLIENT BOOKING EXPERIENCE
+  # =================================
+  # Status: backlog (Waiting for Epic 2 to complete)
+  # Priority: P0 - CORE VALUE PROPOSITION
+  # Effort: 16 hours
+  # Sprint: 2 (Week 2-3)
+  # Dependency: Epic 2 (Authentication) MUST be complete
+  # Can be done in parallel with Epic 4 (Admin Dashboard) after Auth is done
+
+  epic-3: backlog
+
+  # Story 3.1: Booking Form Component (Address, Date, Time, Notes)
+  # Dependencies: Epic 2 ✓, 1.1 (Frontend init)
+  # Effort: 3 hours
+  # Priority: P0 - CRITICAL for MVP
+  3-1-booking-form-component-address-date-time-notes: backlog
+
+  # Story 3.2: Real-Time Availability Validation
+  # Dependencies: 3.1 (Booking form), 1.3 (Database schema)
+  # Effort: 3 hours
+  # Priority: P0 - CRITICAL (prevents double-booking)
+  3-2-real-time-availability-validation: backlog
+
+  # Story 3.3: Booking Confirmation & Success Message
+  # Dependencies: 3.2 (Availability validation)
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL for user feedback
+  3-3-booking-confirmation-success-message: backlog
+
+  # Story 3.4: Client Booking History View
+  # Dependencies: Epic 2 ✓, 1.3 (Database schema)
+  # Effort: 3 hours
+  # Priority: P1 - Important but can defer if needed
+  3-4-client-booking-history-view: backlog
+
+  # Story 3.5: Booking Detail View
+  # Dependencies: 3.4 (History view)
+  # Effort: 2 hours
+  # Priority: P1 - Nice-to-have but quick to implement
+  3-5-booking-detail-view: backlog
+
+  # Story 3.6: Client Dashboard Home Page
+  # Dependencies: Epic 2 ✓
+  # Effort: 1 hour
+  # Priority: P1 - Navigation/UX
+  3-6-client-dashboard-home-page: backlog
+
+  epic-3-retrospective: optional
+
+
+  # EPIC 4: ADMIN MANAGEMENT DASHBOARD
+  # ==================================
+  # Status: backlog (Waiting for Epic 2 to complete)
+  # Priority: P0 - CORE VALUE PROPOSITION
+  # Effort: 14 hours
+  # Sprint: 3 (Week 3, can run parallel with Epic 3 after Auth is complete)
+  # Dependency: Epic 2 (Authentication) MUST be complete
+  # Can be done in parallel with Epic 3 (Client Booking) after Auth is done
+
+  epic-4: backlog
+
+  # Story 4.1: Admin Dashboard Layout & Navigation
+  # Dependencies: Epic 2 ✓, 1.1 (Frontend init)
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL for admin entry point
+  4-1-admin-dashboard-layout-navigation: backlog
+
+  # Story 4.2: Agendamentos List View (All Clients)
+  # Dependencies: 4.1 (Dashboard layout), 1.3 (Database)
+  # Effort: 3 hours
+  # Priority: P0 - CRITICAL for admin visibility
+  4-2-agendamentos-list-view-all-clients: backlog
+
+  # Story 4.3: Filter & Search Agendamentos
+  # Dependencies: 4.2 (List view)
+  # Effort: 2 hours
+  # Priority: P1 - Important for usability
+  4-3-filter-search-agendamentos: backlog
+
+  # Story 4.4: Status Update UI (Inline Actions)
+  # Dependencies: 4.2 (List view), 1.3 (Database)
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL for admin workflow
+  4-4-status-update-ui-inline-actions: backlog
+
+  # Story 4.5: Agendamento Detail Modal/View
+  # Dependencies: 4.2 (List view)
+  # Effort: 2 hours
+  # Priority: P1 - Nice-to-have but quick
+  4-5-agendamento-detail-modal-view: backlog
+
+  # Story 4.6: Real-Time Availability Display
+  # Dependencies: 4.2 (List view), 1.3 (Database)
+  # Effort: 2 hours
+  # Priority: P2 - Optional for MVP (can defer)
+  4-6-real-time-availability-display: backlog
+
+  epic-4-retrospective: optional
+
+
+  # EPIC 5: EMAIL NOTIFICATIONS & SYSTEM INTEGRATION
+  # ================================================
+  # Status: backlog (Waiting for Epics 3 & 4 to be substantially complete)
+  # Priority: P0 - MVP COMPLETION
+  # Effort: 10 hours
+  # Sprint: 4 (Week 4)
+  # Dependencies: Epics 3 & 4 (Booking + Admin Dashboard) substantially complete
+
+  epic-5: backlog
+
+  # Story 5.1: SendGrid Integration & Email Service Setup
+  # Dependencies: 1.2 (Backend init), 1.4 (Env config)
+  # Effort: 1 hour
+  # Priority: P0 - BLOCKER for email feature
+  5-1-sendgrid-integration-email-service-setup: backlog
+
+  # Story 5.2: Booking Confirmation Email Template
+  # Dependencies: 5.1 (SendGrid setup)
+  # Effort: 1 hour
+  # Priority: P0 - CRITICAL for user notification
+  5-2-booking-confirmation-email-template: backlog
+
+  # Story 5.3: Conflict Prevention at Database Level
+  # Dependencies: 1.3 (Database schema) - likely already done in Story 1.3
+  # Effort: 1 hour
+  # Priority: P0 - CRITICAL for data integrity
+  5-3-conflict-prevention-at-database-level: backlog
+
+  # Story 5.4: Email Notification on Status Changes
+  # Dependencies: 5.1 (SendGrid), 4.4 (Status update UI)
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL for user workflow
+  5-4-email-notification-on-status-changes: backlog
+
+  # Story 5.5: Error Handling & Reliability
+  # Dependencies: All previous stories
+  # Effort: 2 hours
+  # Priority: P1 - Important for production readiness
+  5-5-error-handling-reliability: backlog
+
+  # Story 5.6: Frontend & Backend Deployment
+  # Dependencies: Epics 3 & 4 complete, 5.5 (Error handling)
+  # Effort: 2 hours
+  # Priority: P0 - CRITICAL for MVP launch
+  5-6-frontend-backend-deployment: backlog
+
+  # Story 5.7: System Testing & QA
+  # Dependencies: 5.6 (Deployment), all previous stories
+  # Effort: 1 hour
+  # Priority: P0 - CRITICAL before production launch
+  5-7-system-testing-qa: backlog
+
+  epic-5-retrospective: optional
+
+
+# ============================================================================
+# SPRINT PLANNING SUMMARY
+# ============================================================================
+
+sprint_summary:
+  total_epics: 5
+  total_stories: 28
+  total_retrospectives: 5
+  estimated_total_effort_hours: 68
+  
+  effort_by_epic:
+    epic-1-foundation: 16
+    epic-2-authentication: 12
+    epic-3-client-booking: 16
+    epic-4-admin-dashboard: 14
+    epic-5-email-deployment: 10
+
+  estimated_timeline:
+    sprint-0-foundation: "Week 1 (Epic 1: 16h)"
+    sprint-1-auth: "Week 1-2 (Epic 2: 12h - Parallel possible after Week 1)"
+    sprint-2-client: "Week 2-3 (Epic 3: 16h - Parallel with Sprint 3)"
+    sprint-3-admin: "Week 3 (Epic 4: 14h - Parallel with Sprint 2)"
+    sprint-4-email-deploy: "Week 4 (Epic 5: 10h)"
+    total: "4 weeks (68 hours, solo developer)"
+
+  critical_path:
+    - Epic 1 (Foundation) → BLOCKER for all others
+    - Epic 2 (Auth) → BLOCKER for Epics 3 & 4
+    - Epic 3 & 4 (Booking + Admin) → Can run parallel
+    - Epic 5 (Email & Deploy) → Final integration and launch
+
+  parallelization_opportunities:
+    after-epic-1: "Epics 2, 3, 4 can overlap after foundation (2 is blocker for 3&4)"
+    after-epic-2: "Epics 3 & 4 can run in parallel (same 2-week window)"
+    epic-5-timing: "Start Epic 5 when Epics 3 & 4 are 80% complete"
+
+  risk_factors:
+    timeline_risk: "68 hours in 4 weeks is aggressive; real implementation may require 5-6 weeks"
+    complexity_risk: "Database unique constraint for double-booking must be correct; test thoroughly"
+    email_reliability: "SendGrid integration must be tested; manual fallback if needed"
+    oauth_setup: "Google OAuth setup requires credential management; test with multiple browsers"
+
+  next_steps:
+    - "1. Create story files (one .md per story) using bmad-create-story skill"
+    - "2. Update sprint-status.yaml as stories transition to 'ready-for-dev'"
+    - "3. Begin development with Epic 1 stories (Foundation)"
+    - "4. After Epic 1 complete, prioritize Epic 2 (Authentication) - BLOCKER for Epics 3 & 4"
+    - "5. Parallelize Epics 3 & 4 (Booking + Admin) after Epic 2 is done"
+    - "6. Start Epic 5 (Email & Deploy) when Epics 3 & 4 are 80% complete"
+
+# ============================================================================
+# QUALITY METRICS & DEFINITION OF DONE
+# ============================================================================
+
+definition_of_done_epic:
+  - "All stories in epic are complete (status: done)"
+  - "Retrospective has been conducted and lessons captured"
+  - "No critical bugs or blockers remaining"
+  - "Code review completed for all stories in epic"
+
+definition_of_done_story:
+  - "Acceptance criteria all met and verified"
+  - "Code passes peer review (code-review workflow)"
+  - "Tests pass (unit tests + integration tests)"
+  - "Documentation updated if needed"
+  - "No console errors or warnings"
+  - "Accessibility verified (WCAG Level A minimum)"
+  - "Mobile responsiveness verified"
+
+quality_gates:
+  - "All FRs covered by stories (38/38) ✓"
+  - "All NFRs covered by stories (20/20) ✓"
+  - "All UX requirements covered by stories (32/32) ✓"
+  - "All additional requirements covered by stories (16/16) ✓"
+  - "Effort estimates realistic based on story complexity"
+  - "Dependency chain is clear and no circular dependencies"
+
+# ============================================================================
+# GENERATED BY: bmad-sprint-planning workflow
+# GENERATED AT: 13 de maio de 2026 às 00:00 UTC
+# ============================================================================

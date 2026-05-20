@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+/// Roles de usuário no sistema
+enum UserRole {
+  /// Cliente que agenda serviços
+  client
+  /// Administrador que gerencia agendamentos
+  admin
+}
+
+/// Estados possíveis de um agendamento
+/// Transições: solicitado → confirmado → em_atendimento → concluido
+/// Ou: solicitado → cancelado (libera o slot)
+enum AgendamentoStatus {
+  solicitado
+  confirmado
+  em_atendimento
+  concluido
+  cancelado
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+/// Usuários do sistema (clientes e admins)
+/// Criados automaticamente no primeiro login via Google OAuth
+/// Relacionamento: 1 User → N Agendamentos
+model User {
+  /// ID único gerado como UUID
+  id String @id @default(uuid())
+
+  /// Email do usuário (único no sistema)
+  /// Vem do Google Profile e é usado para identificação
+  email String @unique
+
+  /// ID do usuário no Google OAuth (único)
+  /// Usado para vincular conta ao Google Profile nas atualizações
+  googleId String @unique @db.VarChar(255)
+
+  /// Nome completo do usuário (vem do Google Profile)
+  name String
+
+  /// Papel/role do usuário: 'client' ou 'admin'
+  /// Determina quais endpoints API o usuário pode acessar
+  role UserRole @default(client)
+
+  /// Timestamp de quando o usuário foi criado
+  createdAt DateTime @default(now())
+
+  /// Timestamp de última atualização do perfil
+  updatedAt DateTime @updatedAt
+
+  /// Relacionamento: agendamentos criados por este usuário
+  /// onDelete: Cascade → quando usuário é deletado, seus agendamentos também são
+  agendamentos Agendamento[] @relation("agendamentos")
+
+  /// Índice para otimizar buscas por googleId (OAuth lookups)
+  @@index([googleId])
+}
+
+/// Agendamentos de serviço de limpeza
+/// Criados pelos clientes, gerenciados pelo admin
+/// Relacionamento: N Agendamentos → 1 User
+model Agendamento {
+  /// ID único gerado como UUID
+  id String @id @default(uuid())
+
+  /// ID do cliente que criou o agendamento
+  /// Foreign key para User.id
+  userId String
+
+  /// Relacionamento: cliente que criou este agendamento
+  user User @relation("agendamentos", fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Data do agendamento (sem horário)
+  /// Formato: YYYY-MM-DD (armazenado como DATE no PostgreSQL)
+  date DateTime @db.Date
+
+  /// Horário do agendamento
+  /// Formato: HH:MM (ex: "14:30")
+  /// Validação de formato: deve estar entre 09:00 e 18:00 na aplicação
+  time String @db.VarChar(5)
+
+  /// Endereço onde o serviço será realizado
+  /// Exemplo: "Rua das Flores, 123, São Paulo, SP"
+  /// Não pode ser vazio
+  address String
+
+  /// Observações/notas adicionadas pelo cliente
+  /// Exemplo: "Sofá grande, necessário limpeza profunda"
+  /// Pode ser vazio/nulo se cliente não adicionar observações
+  observations String @db.Text
+
+  /// Status atual do agendamento
+  /// Transições: solicitado → confirmado → em_atendimento → concluído
+  /// Ou: solicitado → cancelado (libera o slot)
+  /// Default: 'solicitado'
+  status AgendamentoStatus @default(solicitado)
+
+  /// Timestamp de quando o agendamento foi criado
+  createdAt DateTime @default(now())
+
+  /// Timestamp de última atualização do status
+  updatedAt DateTime @updatedAt
+
+  /// CONSTRAINT CRÍTICO: Previne double-booking
+  /// Cria índice UNIQUE em (date, time) que impede dois agendamentos ativos
+  /// no mesmo slot. Permite múltiplos cancelados (para histórico).
+  /// ⚠️ PostgreSQL não suporta unique constraints condicionais nativamente,
+  /// portanto a validação ocorre em dois níveis:
+  /// 1. Banco de dados: constraint unique em (date, time)
+  /// 2. Aplicação: antes de INSERT, checar se existe agendamento ativo
+  /// 3. Trigger SQL: pode ser adicionado para enforcement automático
+  @@unique([date, time], map: "unique_date_time_active")
+
+  /// Índices para otimizar queries comuns
+  /// Queries: "agendamentos do usuário X"
+  @@index([userId])
+  /// Queries: "agendamentos da data X"
+  @@index([date])
+  /// Queries: "agendamentos com status X"
+  @@index([status])
+}
