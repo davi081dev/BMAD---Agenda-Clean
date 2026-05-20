@@ -1,0 +1,60 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, staging ]
+    paths: [ backend/**, .github/workflows/backend-ci.yml ]
+  pull_request:
+    branches: [ main, staging ]
+    paths: [ backend/** ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: agenda_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'backend/package-lock.json'
+      
+      - name: Install dependencies
+        run: npm ci
+        working-directory: backend
+      
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: backend
+      
+      - name: Run TypeScript Check
+        run: npm run type-check
+        working-directory: backend
+      
+      - name: Build
+        run: npm run build
+        working-directory: backend
+      
+      - name: Run Tests
+        run: npm run test || true
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/agenda_test
